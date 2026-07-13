@@ -553,23 +553,37 @@
   });
 
   /* ---------- storage (persist between visits) ---------- */
-  var mem = {}; // fallback if window.storage unavailable
+  var mem = {}; // last-resort fallback if no storage is available
   var hasStore = (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+  var hasLocal = (function(){
+    try{ var t='ywas:test'; localStorage.setItem(t,'1'); localStorage.removeItem(t); return true; }
+    catch(e){ return false; }
+  })();
   var KEY = function(k){ return 'ywas:'+k; };
 
   async function loadVal(k){
     if(hasStore){
-      try{ var r = await window.storage.get(KEY(k), false); return r ? r.value : null; }
-      catch(e){ return null; }
+      try{ var r = await window.storage.get(KEY(k), false); if(r && r.value != null) return r.value; }
+      catch(e){}
+    }
+    if(hasLocal){
+      try{ var v = localStorage.getItem(KEY(k)); if(v !== null) return v; }
+      catch(e){}
     }
     return (k in mem) ? mem[k] : null;
   }
   async function saveVal(k,v){
+    var ok = false;
     if(hasStore){
-      try{ await window.storage.set(KEY(k), v, false); return true; }
-      catch(e){ return false; }
+      try{ await window.storage.set(KEY(k), v, false); ok = true; }
+      catch(e){}
     }
-    mem[k] = v; return true;
+    if(hasLocal){
+      try{ localStorage.setItem(KEY(k), v); ok = true; }
+      catch(e){}
+    }
+    mem[k] = v;
+    return ok || !hasStore && !hasLocal;
   }
 
   /* ---------- text fields ---------- */
