@@ -274,11 +274,12 @@
   .sf3d{ position:absolute; inset:0; transform-style:preserve-3d; }
   .sf3d__rotor{
     position:absolute; inset:0; transform-style:preserve-3d;
-    animation:sfspin 15s linear infinite; transform:rotateX(14deg);
+    animation:sfsway 8s ease-in-out infinite alternate;
+    transform:rotateX(15deg) rotateY(-30deg);
   }
-  @keyframes sfspin{
-    from{ transform:rotateX(14deg) rotateY(0deg); }
-    to  { transform:rotateX(14deg) rotateY(360deg); }
+  @keyframes sfsway{
+    from{ transform:rotateX(17deg) rotateY(-34deg); }
+    to  { transform:rotateX(9deg)  rotateY(34deg); }
   }
   .sf3d__petal{
     position:absolute; left:50%; top:6%; width:15%; height:44%; margin-left:-7.5%;
